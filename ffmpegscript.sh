@@ -2,15 +2,15 @@
 
 file=""
 out="./"
-dur=1.0
+dur=0.05
 stripaudio=""
-ratio=0.6
+ratio=1.00
 th=0.05
 add=0.00
 trim=0.00
 
 usage () {
-  echo "Usage: $(basename $0) [[[-o folder] [-d black duration]] | [-h]] -f new.mp4"
+  echo "Usage: $(basename $0) [[[-o folder] [-d black duration]] | [-h]] -f file.mp4"
   echo
   echo "Options:"
   echo "-f, --file          Input file"
@@ -87,12 +87,12 @@ cut_part () {
   ffmpeg -y -loglevel error -hide_banner -ss $1 -i $file -c:v copy -c:a copy $stripaudio $duration_flag $3 $fileout < /dev/null
 }
 
-filename="myvideo.mp4"
+filename=`basename $file`
 mkdir -p $out
 timefrom=0
 i=1
 
-ffmpeg -i "myvideo.mp4" -vf blackdetect=d=$dur:pic_th=$ratio:pix_th=$th -f null - 2> ffout
+ffmpeg -i $file -vf blackdetect=d=$dur:pic_th=$ratio:pix_th=$th -f null - 2> ffout
 black_start=( $(grep blackdetect ffout | grep black_start:[0-9.]* -o | grep "[0-9]*\.[0-9]*" -o) )
 black_duration=( $(grep blackdetect ffout | grep black_duration:[0-9.]* -o | grep "[0-9]*\.[0-9]*" -o) )
 > timestamps
